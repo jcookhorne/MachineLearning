@@ -1,0 +1,27 @@
+# note for my notebook,
+# the dependent variable is the effect in the causal
+# relationship while all of the independent variables
+# are the cause that creates what the dependent variable is
+
+Assumptions of linear regression
+1: Linearity - Linear relationships between y and each x
+
+2: Homoscedasticity - Equal Variance meaning that you dont want
+to see a cone type shape whether increasing or decreasing
+
+3: Multivariate Normality - Normality of error distribution
+
+4: Independence - of observations, Includes "no autocorrelation"
+This pretty much means that we dont want to see patterns in the data
+
+5:Lack of MultiCollinearity - Predictors are not correlated with each other
+X1 +X2 (thats good)
+X1~X2 (not good??)
+
+(not an actual check but good to keep in my mind
+6: The Outlier Check - this is not an assumption but an extra check
+
+outliers can change the way your dataset is presented so you should
+check if you wanna keep them or if you wanna take them out
+this will generally depend on your knowledge of the dataset and
+the business
