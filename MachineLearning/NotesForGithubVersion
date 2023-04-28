@@ -1,0 +1,110 @@
+t_audio = obj.getnFrames() / obj.getFrameRate()
+print(t_audio)
+
+frames = obj.readframes(-1)
+print(type(frames), type(frames[0]))
+print(len(frames))
+
+obj.close()
+
+obj_new = wave.open("joshua_testing.wav", "wb")
+obj_new.setnchannels(1)
+obj_new.setnsampwidth(2)
+obj_new.setframerate(16000.0)
+
+
+obj_new.writeframes(frames)
+obj_new.close()
+
+#PLOTTING A WAV FILE
+
+import wave
+import matplotlib.pyplot as plt
+import numpy as mp
+
+obj = wave.open("", "rb")
+sample_freq = obj.getframeRate()
+n_sample = obj.getnframes()
+signal_wave=obj.readframes(-1)
+obj.close()
+
+t_audio = n_sample / sample_freq
+print(t_audio)
+
+signal_array = np.frombuffer(signal_wave, dtype=np.int)
+
+times = np.linspace(0,t_audio, num=n_sample)
+
+plt.figure(figsize = (15, 5))
+plt.plot(times, singal_array)
+plt.title("Audio Signal")
+plt.ylabel("Signal wave")
+plt.xlabel("Time (s)")
+plt.xlim(0, t_audio)
+plt.show()
+
+
+#HOW TO RECORD IN PYTHON AND CAPTURE MICROPHONE INPUT
+#to do this we need to use PyAudio
+in windows this is the command for installation
+# pthon -m pip install pyaudio
+
+import pyaudio
+import wave
+
+Frames_Per_Buffer=3200
+FORMAT = pyaudio.paInt16
+CHANNELS = 1
+RATE = 16000
+p= pyaudio.PyAudio()
+stream = p.open(
+    format = FORMAT,
+    channels = CHANNELS,
+    rate = RATE,
+    input=True,
+    frames_per_buffer= FRAMES_PER_BUFFER
+)
+
+print("Start recording")
+
+
+
+
+
+#TO LOAD MP3 FILES
+install pydub
+
+from pydub import AudioSegment
+audio = AudioSegment.from_wav("output.wav")
+
+#this will increase the volume by 6db (decibles)
+audio = audio + 6
+
+audio = audio * 2
+
+audio = audio.fade_in(2000)
+audio.export("mashup.mp3", format="mp3")
+audio2 = AudioSegment.from_mp3("mashup.mp3")
+print("done")
+
+
+
+
+#SPEECH RECOGNITION -- TAKING AUDIO AND TURNING IT INTO TEXT
+#needs assemply api  and the one to talk to it
+API KEY FROM assemplyapi:
+a0789c13f5e74de4b00ade1a240e0b9b
+
+
+import requests
+filename=
+def read_file
+#upload
+
+# transcribe
+
+#pull
+
+#
+
+
