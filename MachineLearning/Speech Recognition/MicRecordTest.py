@@ -29,7 +29,7 @@ p.terminate()
 
 print("Stopped Recording")
 
-obj = wave.open("output.wav", "wb")
+obj = wave.open("audioFiles/output.wav", "wb")
 obj.setnchannels(CHANNELS)
 obj.setsampwidth(p.get_sample_size(FORMAT))
 obj.setframerate(RATE)
