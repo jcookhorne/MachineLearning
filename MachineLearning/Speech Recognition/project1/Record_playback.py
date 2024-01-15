@@ -1,5 +1,7 @@
 import pyaudio
 import wave
+from pydub import AudioSegment
+from pydub.playback import play
 
 FRAMES_PER_BUFFER=3200
 FORMAT = pyaudio.paInt16
@@ -29,10 +31,13 @@ p.terminate()
 
 print("Stopped Recording")
 
-obj = wave.open("audioFiles/output.wav", "wb")
+obj = wave.open("../audioFiles/test.wav", "wb")
 obj.setnchannels(CHANNELS)
 obj.setsampwidth(p.get_sample_size(FORMAT))
 obj.setframerate(RATE)
 obj.writeframes(b"".join(frames))
 obj.close()
 
+
+song = AudioSegment.from_wav("../audioFiles/test.wav")
+play(song)

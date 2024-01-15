@@ -1,16 +1,11 @@
 import requests
 from api_secrets import apiKey
-import sys
+import time
 
-# upload
-# use sys.argv when your using the terminal it will take the second
-# variable you put in
-# filename = sys.argv[1]
 upload_endpoint = 'https://api.assemblyai.com/v2/upload'
 transcript_endpoint = "https://api.assemblyai.com/v2/transcript"
-filename = "./audioFiles/output.wav"
+# filename = "./audioFiles/test.wav"
 headers = {'authorization': apiKey}
-
 
 def upload(filename):
     def read_file(filename2, chunk_size=5242880):
@@ -28,8 +23,6 @@ def upload(filename):
     audio_url = response.json()['upload_url']
     print("done with upload")
     return audio_url
-
-
 # transcribe
 def transcribe(audio_url2):
     json = {"audio_url": audio_url2}
@@ -54,10 +47,12 @@ def get_transcription_result_url(audio_url2):
             return data, None
         elif data['status'] == 'completed':
             return data, data['error']
+        print("Waiting 5 seconds. . .")
+        time.sleep(5)
 
 
 # save transcript
-def save_transcript(audio_url2):
+def save_transcript(audio_url2, filename):
     data, error = get_transcription_result_url(audio_url2)
     if data:
         text_filename = filename + ".txt"
@@ -66,7 +61,3 @@ def save_transcript(audio_url2):
         print("transcription is saved")
     elif error:
         print("ERROR!", error)
-
-
-audio_url = upload(filename)
-save_transcript(audio_url)

@@ -3,7 +3,7 @@ import wave
 import matplotlib.pyplot as plt
 import numpy as np
 
-obj = wave.open("audioFiles/joshuaTalkingTest.wav", "rb")
+obj = wave.open("../audioFiles/joshuaTalkingTest.wav", "rb")
 sample_freq = obj.getframerate()
 n_sample = obj.getnframes()
 signal_wave = obj.readframes(-1)
