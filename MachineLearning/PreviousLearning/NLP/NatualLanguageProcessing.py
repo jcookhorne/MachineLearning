@@ -4,7 +4,7 @@ import matplotlib as plt
 
 # the delimeter parameter helps to specify it is  tsv file
 # the quoting parameter when set to 3 allows you to ignore quotes
-dataset = pd.read_csv('Restaurant_Reviews.tsv', delimiter='\t', quoting=3 )
+dataset = pd.read_csv('Restaurant_Reviews.tsv', delimiter='\t', quoting=3)
 
 
 #Cleaning the Text
