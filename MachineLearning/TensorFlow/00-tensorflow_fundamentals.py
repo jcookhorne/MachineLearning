@@ -446,6 +446,6 @@ tensor_J = tf.constant([3.,7.,10.])
 
 
 # * Finding access to GPUs
-print(tf.config.list_physical_devices())
+# print(tf.config.list_physical_devices())
 
 
