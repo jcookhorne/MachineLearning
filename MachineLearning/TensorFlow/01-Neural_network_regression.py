@@ -86,4 +86,36 @@ print(X1, y1)
 print(model.predict(x=tf.cast([17.0], dtype=tf.float32)))
 
 
-# * Improve our model
+# * steps in modelling with tensorFLow
+# * 1) Construct or import a pretrained model relevant to your problem
+# * 2) Compile the model (prepare it to be used with data)
+# ** Loss - how wrong your model's predictions are compared to the truth labels(you want to minimise this).
+# ** Optimizer - how your model should update its internal patterns to better its predictions
+# ** Metrics - human interpretable values for how well your model is doing
+# * 3) Fit the model to the training data so it can discover patterns
+# ** Epochs - how many times the model will go through all of the training examples.
+# * 4) Evaluate the model on the test data ( how reliable are our model's predictions)
+
+# ** Improving our model
+# * we can improve our model, by altering the steps we took to create a model.
+# * 1)  Creating a model - here we might add more layers, increase the number of hidden units ( all called neurons)
+# * - within each of the hidden layers, change the activation function of each layer
+# * 2) Compiling a model - here we might change the optimization function or perhaps the
+# learning rate of the optimization function
+# * 3) Fitting a  model - here we might fit a model for more epochs ( leave it training longer) or on more data
+# (give the model more examples to learn from).
+
+
+# Lets rebuild our model
+
+# 1) Create the model
+model = tf.keras.Sequential([
+    tf.keras.layers.Dense(1)
+])
+
+# 2) Compile the model
+model.compile(loss=tf.keras.losses.mae,
+              optimizer=tf.keras.optimizers.SGD(),
+              metrics=["mae"])
+# 3 ) fit the model
+model.fit(X, y, epochs=100)
