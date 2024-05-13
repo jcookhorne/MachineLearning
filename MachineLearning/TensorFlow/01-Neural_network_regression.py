@@ -124,10 +124,10 @@ newModel.compile(loss="mae",
                  metrics=["mae"])
 
 # 3 fit the model
-newModel.fit(tf.expand_dims(X1, axis=-1), tf.expand_dims(y1, axis=-1), epochs=100)
+# newModel.fit(tf.expand_dims(X1, axis=-1), tf.expand_dims(y1, axis=-1), epochs=100)
 
-print(X,'\n', y)
-print(newModel.predict(x=tf.cast([17.0], dtype=tf.float32)))
+# print(X,'\n', y)
+# print(newModel.predict(x=tf.cast([17.0], dtype=tf.float32)))
 
 # although for whatever reason the data we get back is different from the video the knowledge is the same
 # a good way to improve a deep model would be to add more hidden layers
@@ -158,10 +158,10 @@ X2 = tf.range(-100, 100, 4)
 
 y2 = X2 + 10
 
-print(X2, y2)
+# print(X2, y2)
 # plt.plot(X2, y2)
-plt.scatter(X2, y2)
-plt.show()
+# plt.scatter(X2, y2)
+# plt.show()
 
 # * the 3 sets . . .
 
@@ -172,8 +172,15 @@ plt.show()
 # * you don't always need the validation set
 
 
+# * check the length of how many samples we have
+print(len(X2))
+
+# * Split the data into train and test sets
+
+X_train = X2[:40]  # the first 40 are training samples ( 8_%  of the data)
 
 
+X_test = X2[40:]  # last 10 are testeing samples (20% of the data)
 
 
 
