@@ -119,9 +119,9 @@ newModel = tf.keras.Sequential([
 ])
 
 # 2) compile the model
-newModel.compile(loss="mae",
-                 optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
-                 metrics=["mae"])
+# newModel.compile(loss="mae",
+#                  optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
+#                  metrics=["mae"])
 
 # 3 fit the model
 # newModel.fit(tf.expand_dims(X1, axis=-1), tf.expand_dims(y1, axis=-1), epochs=100)
@@ -173,14 +173,40 @@ y2 = X2 + 10
 
 
 # * check the length of how many samples we have
-print(len(X2))
+# print(len(X2))
 
 # * Split the data into train and test sets
 
 X_train = X2[:40]  # the first 40 are training samples ( 8_%  of the data)
-
+y_train = y2[:40]
 
 X_test = X2[40:]  # last 10 are testeing samples (20% of the data)
+y_test = y2[40:]
+
+print(len(X_train), len(X_test), len(y_train), len(y_test))
+
+# visualize our data again
+
+# plt.figure(figsize=(10, 7))
+# plot test data in blue
+# plt.scatter(X_train, y_train, c="b", label="Training data")
+# Plot test data in green
+# plt.scatter(X_test, y_test, c="g", label="Testing data")
+# plt.legend()
+# plt.show()
+
+# lets build a neural network for our data
+
+# 1 create model
+model2 = tf.keras.Sequential([
+    tf.keras.layers.Dense(1)
+])
+
+model2.compile(loss=tf.keras.losses.mae,
+              optimizer=tf.keras.optimizers.SGD(),
+              metrics=["mae"])
+# 3. fit the model
+model2.fit(X_train, y_train, epochs=100)
 
 
 
