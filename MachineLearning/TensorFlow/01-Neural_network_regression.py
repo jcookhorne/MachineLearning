@@ -1,7 +1,8 @@
-import matplotlib
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
+import PIL.Image as img
+from keras.src.utils import plot_model
 
 # * Introduction to Regression with neural Networks in Tensorflow
 
@@ -177,8 +178,8 @@ y2 = X2 + 10
 
 # * Split the data into train and test sets
 
-X_train = X2[:40]  # the first 40 are training samples ( 8_%  of the data)
-y_train = y2[:40]
+X_train = tf.expand_dims(X2[:40], 1)  # the first 40 are training samples ( 8_%  of the data)
+y_train = tf.expand_dims(y2[:40], 1)
 
 X_test = X2[40:]  # last 10 are testeing samples (20% of the data)
 y_test = y2[40:]
@@ -199,14 +200,85 @@ print(len(X_train), len(X_test), len(y_train), len(y_test))
 
 # 1 create model
 model2 = tf.keras.Sequential([
-    tf.keras.layers.Dense(1)
-])
+    tf.keras.layers.Dense(50, input_shape=[1], name="input_layers"),
+    tf.keras.layers.Dense(10, name="second_layer"),
+    # The Last dense layer should have only 1 unit
+    tf.keras.layers.Dense(1, name="output_layer")
+], name="model_1")
 
 model2.compile(loss=tf.keras.losses.mae,
-              optimizer=tf.keras.optimizers.SGD(),
+               # *** Adam seems to work better than SGD as an optimizer for me
+              optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
               metrics=["mae"])
+
+# * total params - total number of parameters in the model.
+# * Trainable parameters - these are the parameters (patterns) the model can update as it trains
+# * Non-trainable params - these parameters aren't updated during training
+# * (this is typical when you bring in already learned patterns or parameters
+# from other models during **transfer learning**)
+# ** exercise play around with number of hidden units in the dense layer
+
 # 3. fit the model
-model2.fit(X_train, y_train, epochs=100)
+model2.fit(X_train, y_train, epochs=100, verbose=1)
+# model2.summary()
+#
+# plot_model(model=model2, show_shapes=True, to_file="model.png")
+# image = img.open("model.png")
+# image.show()
+
+# ** Visualizing our models predictions
+# * To visualize predictions, its a good idea to plot them against the ground truth labels
+# * Often you'll see this in the form of y_test, y_true versus y_pred (ground trueth versus your model)
+
+# make some predictions
+y_pred = model2.predict(X_test)
+# y_pred = tf.reshape(y_prediction, [10])
+# ** if you feel like your gonna reuse something turn it into a function
+# Lets Create a plotting funtion
+
+def plot_predictions(train_data=X_train,
+                     train_labels=y_train,
+                     test_data=X_test,
+                     test_labels=y_test,
+                     predictions=y_pred):
+    """Plots training data, test data and compares predictions to ground truth labels
+    """
+    plt.figure(figsize=(10, 7))
+    # Plot training data in blue
+    plt.scatter(train_data, train_labels, c="b", label="Training Data")
+    plt.scatter(test_data, test_labels, c="g", label="Test Data" )
+    plt.scatter(test_data, predictions, c="r", label="Predictions")
+    plt.legend()
+    plt.show(block=True)
+
+plot_predictions();
+
+# ** Evaluating our model's predictions with regression evaluation metrics
+# ** depending on the problem you're working on, there will be different evaluation metrics to
+# evaluate your model's performance
+# * Since we're working on a regression, two of the main metrics:
+# * MAE - mean absolute error, "on average, how wrong is each of my model's predictions"
+# * MSE - mean square error, "square the average errors" then find the average
+
+# Evaluate the model on the test
+model2.evaluate(X_test, y_test)
+
+# Calculate the mean absolute error
+
+print("Line 268", tf.keras.losses.MAE(y_true=y_test,y_pred=tf.squeeze(y_pred)))
+
+#calculate the mean square error
+
+print("Line 272", tf.keras.losses.MSE(y_true=y_test,y_pred=tf.squeeze(y_pred)))
+
+# make some functions to reuse mae and mse
+
+def mae(y_true, y_pred):
+    return tf.keras.losses.MAE(y_true=y_true, y_pred=y_pred)
+
+def mse(y_true, y_pred):
+    return tf.keras.losses.MSE(y_true=y_true, y_pred=y_pred)
+
 
 
 
