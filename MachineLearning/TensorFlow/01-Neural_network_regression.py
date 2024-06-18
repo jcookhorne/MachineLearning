@@ -208,8 +208,8 @@ model2 = tf.keras.Sequential([
 
 model2.compile(loss=tf.keras.losses.mae,
                # *** Adam seems to work better than SGD as an optimizer for me
-              optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
-              metrics=["mae"])
+               optimizer=tf.keras.optimizers.Adam(learning_rate=0.01),
+               metrics=["mae"])
 
 # * total params - total number of parameters in the model.
 # * Trainable parameters - these are the parameters (patterns) the model can update as it trains
@@ -219,7 +219,7 @@ model2.compile(loss=tf.keras.losses.mae,
 # ** exercise play around with number of hidden units in the dense layer
 
 # 3. fit the model
-model2.fit(X_train, y_train, epochs=100, verbose=1)
+# model2.fit(X_train, y_train, epochs=100, verbose=1)
 # model2.summary()
 #
 # plot_model(model=model2, show_shapes=True, to_file="model.png")
@@ -232,6 +232,8 @@ model2.fit(X_train, y_train, epochs=100, verbose=1)
 
 # make some predictions
 y_pred = model2.predict(X_test)
+
+
 # y_pred = tf.reshape(y_prediction, [10])
 # ** if you feel like your gonna reuse something turn it into a function
 # Lets Create a plotting funtion
@@ -246,12 +248,13 @@ def plot_predictions(train_data=X_train,
     plt.figure(figsize=(10, 7))
     # Plot training data in blue
     plt.scatter(train_data, train_labels, c="b", label="Training Data")
-    plt.scatter(test_data, test_labels, c="g", label="Test Data" )
+    plt.scatter(test_data, test_labels, c="g", label="Test Data")
     plt.scatter(test_data, predictions, c="r", label="Predictions")
     plt.legend()
     plt.show(block=True)
 
-plot_predictions();
+
+# plot_predictions();
 
 # ** Evaluating our model's predictions with regression evaluation metrics
 # ** depending on the problem you're working on, there will be different evaluation metrics to
@@ -263,22 +266,121 @@ plot_predictions();
 # Evaluate the model on the test
 model2.evaluate(X_test, y_test)
 
+
 # Calculate the mean absolute error
 
-print("Line 268", tf.keras.losses.MAE(y_true=y_test,y_pred=tf.squeeze(y_pred)))
+# print("Line 268", tf.keras.losses.MAE(y_true=y_test,y_pred=tf.squeeze(y_pred)))
 
-#calculate the mean square error
+# calculate the mean square error
 
-print("Line 272", tf.keras.losses.MSE(y_true=y_test,y_pred=tf.squeeze(y_pred)))
+# print("Line 272", tf.keras.losses.MSE(y_true=y_test,y_pred=tf.squeeze(y_pred)))
 
 # make some functions to reuse mae and mse
 
 def mae(y_true, y_pred):
     return tf.keras.losses.MAE(y_true=y_true, y_pred=y_pred)
 
+
 def mse(y_true, y_pred):
     return tf.keras.losses.MSE(y_true=y_true, y_pred=y_pred)
 
 
+# Running experiments to improve our model
 
 
+# 1) get more data - get more examples for your model to train on
+# (more opportunities to learn patterns or relationships)
+# 2) make your model larger ( using a more complex model) - this might come in the form of more layers
+# or more hidden units in each layer
+# 3 Train for longer - give you model more of a chance to find patterns in the data
+
+# lets do 3 modelling experiments:
+
+# 1. model_1 - same as the original model, 1 layer trained for 100 epochs
+# 2 model_2 - 2layers, trained for 200 epochs
+# 3 model_3  2 layers, trained for 500 epochs
+
+# def model_1_training():
+#     tf.random.set_seed(42)
+modeltraining_1 = tf.keras.Sequential([
+    tf.keras.layers.Dense(1)
+])
+modeltraining_1.compile(loss=tf.keras.losses.mae,
+                        optimizer=tf.keras.optimizers.SGD(),
+                        metrics=["mae"])
+modeltraining_1.fit(X_train, y_train, epochs=100)
+model_1_y_pred = modeltraining_1.predict(X_test)
+# plot_predictions(predictions=model_1_y_pred)
+mae_1 = mae(y_test, tf.squeeze(model_1_y_pred))
+mse_1 = mse(y_test, tf.squeeze(model_1_y_pred))
+print("mae: ", mae_1)
+print("mse: ", mse_1)
+
+# model_1_training()
+
+# def model_2_training():
+#     tf.random.set_seed(42)
+modeltraining_2 = tf.keras.Sequential([
+    tf.keras.layers.Dense(7),
+    tf.keras.layers.Dense(1)
+])
+
+modeltraining_2.compile(loss=tf.keras.losses.mae,
+                        optimizer=tf.keras.optimizers.SGD(),
+                        metrics=["mse"])
+modeltraining_2.fit(X_train, y_train, epochs=100)
+model_2_y_pred = modeltraining_2.predict(X_test)
+# plot_predictions(predictions=model_2_y_pred)
+mae_2 = mae(y_test, tf.squeeze(model_2_y_pred))
+mse_2 = mse(y_test, tf.squeeze(model_2_y_pred))
+print("mae 2 : ", mae_2)
+print("mse 2: ", mse_2)
+
+# model_2_training()
+
+# def model_3_training():
+#     tf.random.set_seed(42)
+modeltraining_3 = tf.keras.Sequential([
+    tf.keras.layers.Dense(50),
+    tf.keras.layers.Dense(1)
+])
+
+modeltraining_3.compile(loss=tf.keras.losses.mae,
+                        optimizer=tf.keras.optimizers.SGD(),
+                        metrics=["mse"])
+modeltraining_3.fit(X_train, y_train, epochs=500)
+model_3_y_pred = modeltraining_3.predict(X_test)
+# plot_predictions(predictions=model_3_y_pred)
+mae_3 = mae(y_test, tf.squeeze(model_3_y_pred))
+mse_3 = mse(y_test, tf.squeeze(model_3_y_pred))
+print("mae 3: ", mae_3)
+print("mse 3: ", mse_3)
+
+# model_3_training()
+
+# Comparing the results of our experiments
+
+# lets compare our models results using a pandas DataFrame
+import pandas as pd
+
+model_results = [["model_1", mae_1.numpy(), mse_1.numpy()],
+                 ["model_2", mae_2.numpy(), mse_2.numpy()],
+                 ["model_3", mae_3.numpy(), mse_3.numpy()]]
+
+all_results = pd.DataFrame(model_results, columns=["model", "mae", "mse"])
+print(all_results)
+# model 1 performed best?
+
+# one of your main goals should be to minimize the time between your experiments you do the more things you'ss figure
+# out which dont work and in turn, get closer to figuring out what does work. remember the michine leaning
+# practioners motto experiment experiment experiment
+
+## Tracking your experiments
+# one really good habit in machine learning modelling is to track the reuslts of your experiments
+# which can be tedious if your running lots of experiments
+# luckily there are tools to help us!
+# as you build more models, you'll want to look into using :
+# TensorBoard a component of the tensorflow library to help track modelling experiments
+
+# Weights and Biases - a tool for tracking all kinds of machine learning experiments
+# plugs straight into tensorBoard
