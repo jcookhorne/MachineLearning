@@ -1,3 +1,4 @@
+import keras.src.saving.saving_api
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
@@ -368,7 +369,7 @@ model_results = [["model_1", mae_1.numpy(), mse_1.numpy()],
                  ["model_3", mae_3.numpy(), mse_3.numpy()]]
 
 all_results = pd.DataFrame(model_results, columns=["model", "mae", "mse"])
-print(all_results)
+# print(all_results)
 # model 1 performed best?
 
 # one of your main goals should be to minimize the time between your experiments you do the more things you'ss figure
@@ -384,3 +385,36 @@ print(all_results)
 
 # Weights and Biases - a tool for tracking all kinds of machine learning experiments
 # plugs straight into tensorBoard
+
+# Saving our models
+# Savings our models allows us to use them outside of google colab or whereever they were trained
+# such as a web application or a mobile app
+
+# there are two main formats we can save our model's too:
+#1 The savedModel format
+#2 the HDF5 format
+
+# Save the model using the savedModel format
+# keras.src.saving.saving_api.save_model(modeltraining_3,"practice_saving_model_2.keras")
+# Save model using the HDF5 format
+# modeltraining_3.save("practice_saving_model.h5")
+
+# Loading in a saved model format model
+loaded_SavedModel_format = tf.keras.models.load_model("practice_saving_model_2.keras")
+
+print(loaded_SavedModel_format.summary())
+print(modeltraining_3.summary())
+
+# Comparing modeltraining_3 with SavedModel format model predictions
+modeltraining_3_preds = modeltraining_3.predict(X_test)
+loaded_SavedModel_format_preds = loaded_SavedModel_format.predict(X_test)
+# ** for whatever reason our data is different from when it gets saved,
+# could be that were not setting a  seed
+
+print(modeltraining_3_preds == loaded_SavedModel_format_preds)
+
+
+# a larger example
+
+
+
