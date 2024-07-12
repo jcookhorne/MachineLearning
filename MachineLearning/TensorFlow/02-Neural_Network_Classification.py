@@ -38,7 +38,9 @@ we are assigning an object to a predefined classes
 # * Creating data to view and fit
 
 from sklearn.datasets import make_circles
-
+import pandas as pd
+import matplotlib.pyplot as plt
+import tensorflow as tf
 # make 1000 examples
 n_samples = 1000
 
@@ -52,13 +54,90 @@ print(X)
 print(y[:10])
 
 # * our data is a little hard to understand right now.. lets visulize
-import pandas as pd
 circles = pd.DataFrame({"X0": X[:, 0], "X1": X[:, 1], "label": y})
 print(circles)
 
 # visualize with a plot
-import matplotlib.pyplot as plt
 plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.RdYlBu)
-plt.show()
+# plt.show()
+
+
+# input and output shapes of our features and labels
+print(X.shape, y.shape)
+
+# how many samples were working with
+print(len(X), len(y))
+
+# View the first example of features and labels
+print(X[5], y[0])
+
+#set the random seed
+tf.random.set_seed(42)
+
+# create the model using the sequential api
+model = tf.keras.Sequential([
+    # tf.keras.Input(shape=(1000, 1000, 2)),
+    # tf.keras.layers.Dense(100),
+    tf.keras.layers.Dense(1)
+])
+
+# compile the model
+model.compile(loss=tf.keras.losses.BinaryCrossentropy(),
+              optimizer=tf.keras.optimizers.SGD(),
+              metrics=["accuracy"])
+
+model.fit(X, y, epochs=200, verbose=0)
+model.evaluate(X,y)
+
+# we are working on a binary classification problem and our model
+# is getting around 50% accuracy its performing as if it is guessing
+# so lets add another layer
+
+
+# set random seed
+model_2 = tf.keras.Sequential([
+    tf.keras.layers.Dense(1),
+    tf.keras.layers.Dense(1)
+])
+
+# 2 compile the model
+model_2.compile(loss=tf.keras.losses.BinaryCrossentropy(),
+                optimizer=tf.keras.optimizers.SGD(),
+                metrics=["accuracy"])
+# 3.fit the model
+model_2.fit(X, y, epochs=100, verbose=0)
+
+# 4 evaluate the model
+model_2.evaluate(X, y)
+
+# didn't get any better with just adding another layer
+# Improving our model!
+
+# 1. Create a model - we might to add more layers or increase the number of hidden units within a layer.
+# 2. Compiling a model - here we might to choose a different optimization function such as Adam instead of SGD
+# 3. Fitting a model - perhaps we might fit our model for more epochs(leave it training for longer
+
+# create the model 3layers
+model_3 = tf.keras.Sequential([
+    tf.keras.layers.Dense(100),
+    tf.keras.layers.Dense(10),
+    tf.keras.layers.Dense(1)
+])
+
+# 2 compile the model
+model_3.compile(loss=tf.keras.losses.BinaryCrossentropy(),
+                optimizer=tf.keras.optimizers.Adam(),
+                metrics=["accuracy"])
+
+# fit the model
+model_3.fit(X,y, epochs=100, verbose=0)
+# evaluate the modle
+model_3.evaluate(X, y)
+model_3.predict(X)
+
+# Take in a trained model, features X and labels y
+# create a meshgrid of different X values
+# make predictions across the meshgrid
+# plot the predictions as well as a line between zones ( where each unique class falls)
 
 
