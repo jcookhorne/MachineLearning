@@ -32,7 +32,7 @@ we are assigning an object to a predefined classes
 # * a few types of classification problems
 # * Binary Classification
 # * Multiclass Classification
-# * Multilable classification
+# * Multilabel classification
 
 
 # * Creating data to view and fit
@@ -41,6 +41,8 @@ from sklearn.datasets import make_circles
 import pandas as pd
 import matplotlib.pyplot as plt
 import tensorflow as tf
+import numpy as np
+
 # make 1000 examples
 n_samples = 1000
 
@@ -71,7 +73,7 @@ print(len(X), len(y))
 # View the first example of features and labels
 print(X[5], y[0])
 
-#set the random seed
+# set the random seed
 tf.random.set_seed(42)
 
 # create the model using the sequential api
@@ -87,7 +89,7 @@ model.compile(loss=tf.keras.losses.BinaryCrossentropy(),
               metrics=["accuracy"])
 
 model.fit(X, y, epochs=200, verbose=0)
-model.evaluate(X,y)
+model.evaluate(X, y)
 
 # we are working on a binary classification problem and our model
 # is getting around 50% accuracy its performing as if it is guessing
@@ -130,14 +132,119 @@ model_3.compile(loss=tf.keras.losses.BinaryCrossentropy(),
                 metrics=["accuracy"])
 
 # fit the model
-model_3.fit(X,y, epochs=100, verbose=0)
+model_3.fit(X, y, epochs=100, verbose=0)
 # evaluate the modle
 model_3.evaluate(X, y)
 model_3.predict(X)
 
+
+# to visualize our model's predictions, lets create a function plot_decision_boundary(), this function will:
 # Take in a trained model, features X and labels y
 # create a meshgrid of different X values
 # make predictions across the meshgrid
 # plot the predictions as well as a line between zones ( where each unique class falls)
+
+def plot_decision_boundary(model, X, y):
+    """ plots the decision boundary created by a model predicting on X
+    """
+    # Define the axis boundaries of the plot and create a meshgrid
+    x_min, x_max = X[:, 0].min() - 0.1, X[:, 0].max() + 0.1
+    y_min, y_max = X[:, 1].min() - 0.1, X[:, 1].max() + 0.1
+
+    print(x_min, x_max, y_min, y_max)
+    xx, yy = np.meshgrid(np.linspace(x_min, x_max, 100),
+                         np.linspace(y_min, y_max, 100));
+
+    # create X values were going to make predictions on these
+    x_in = np.c_[xx.ravel(), yy.ravel()] # stack 2d arrays together
+
+    # Make predictions
+    y_pred =  model.predict(x_in)
+
+    # check for multi class classification problems
+    if len(y_pred[0]) > 1:
+        print("doing multiclass classification")
+        # we have to reshape our predictions to get them ready for plotting
+        y_pred = np.argmax(y_pred, axis=1).reshape(xx.shape)
+    else:
+        print("doing binary classification")
+        y_pred = np.round(y_pred).reshape(xx.shape)
+
+    # Plot the decision boundary
+    plt.contourf(xx, yy, y_pred, cmap=plt.cm.RdYlBu, alpha=0.7)
+    plt.scatter(X[:, 0], X[:, 1], c=y, s=40, cmap=plt.cm.RdYlBu)
+    plt.xlim(xx.min(), xx.max())
+    plt.ylim(yy.min(), yy.max())
+    # plt.show()
+
+
+# Check out the predictions our models are making
+
+# plot_decision_boundary(model=model_3, X=X, y=y)
+
+
+# lets see if our model can be used for a regression problem...
+tf.random.set_seed(42)
+
+# create some regression data
+X_regression = tf.range(0, 1000, 5)
+y_regression = tf.range(100, 1100, 5) # y =X +100
+
+# print(X_regression, y_regression)
+
+X_reg_train = tf.expand_dims(X_regression[:150], 1)
+X_reg_test = tf.expand_dims(X_regression[150:], 1)
+y_reg_train = tf.expand_dims(y_regression[:150], 1)
+y_reg_test = tf.expand_dims(y_regression[150:], 1)
+
+# Fit our model to the regression data
+# model_3.fit(X_reg_train, y_reg_train, epochs=100)
+
+# oh wait we compiles our model for a binary classification problem
+# but were now working on a regression problem lets change the model to suit our data
+
+
+# create the model 3layers
+model_4 = tf.keras.Sequential([
+    tf.keras.layers.Dense(100),
+    tf.keras.layers.Dense(10),
+    tf.keras.layers.Dense(1)
+])
+
+# 2 compile the model, this time with a regression-specific loss function
+model_4.compile(loss=tf.keras.losses.mae,
+                optimizer=tf.keras.optimizers.Adam(),
+                metrics=["mae"])
+
+# fit the model
+model_4.fit(X_reg_train, y_reg_train, epochs=100)
+# make predictions with our trained model
+y_reg_preds = model_4.predict(X_reg_test)
+plt.figure(figure=(10, 7))
+plt.scatter(X_reg_train, y_reg_train, c="b", label="Training data")
+plt.scatter(X_reg_test, y_reg_test, c="g", label="Test data")
+plt.scatter(X_reg_test, y_reg_preds, c="r", label="Prediction data")
+plt.legend()
+# plt.show()
+
+
+# #The missing piece non-linearity
+# create the model
+
+model_5 = tf.keras.Sequential([
+    tf.keras.layers.Dense(1, activation=tf.keras.activations.linear)
+])
+
+# 2. Compile
+model_5.compile(loss=tf.keras.losses.BinaryCrossentropy(),
+                optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
+                metrics=["accuracy"])
+
+
+# 3 fit the model
+history = model_5.fit(X, y, epochs=100)
+plt.scatter(X[:, 0], X[:, 1], c=y, cmap=plt.cm.RdYlBu)
+plt.show()
+plot_decision_boundary(model=model_5, X=X, y=y)
 
 
