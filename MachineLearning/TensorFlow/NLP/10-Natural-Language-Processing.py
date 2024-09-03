@@ -22,6 +22,20 @@ from helper_functions import unzip_data, create_tensorboard_callback, plot_loss_
 
 import pandas as pd
 train_df = pd.read_csv("train.csv")
+test_df = pd.read_csv("test.csv")
+print(train_df.head())
+print(train_df["text"][0])
+print(train_df["text"][1])
 
+# shuffle training dataframe
+# good to shuffle data as long as data isn't sequential data
+train_df_shuffled = train_df.sample(frac=1, random_state=42)
+print(train_df_shuffled.head())
+
+# what does the test dataframe look like?
+print(test_df.head())
+
+# how many examples of each class?
+print(train)
 
 
