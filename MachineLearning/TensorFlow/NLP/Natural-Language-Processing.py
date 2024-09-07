@@ -1,8 +1,6 @@
-# on my home computer i did all the gpu stuff
-
 # import series of helper functions for the notebook
-import wget
-from helper_functions import unzip_data, create_tensorboard_callback, plot_loss_curves, compare_historys
+# import wget
+# from helper_functions import unzip_data, create_tensorboard_callback, plot_loss_curves, compare_historys
 import pandas as pd
 import random
 import tensorflow as tf
@@ -10,7 +8,7 @@ from tensorflow.keras.layers import TextVectorization
 
 # url = 'https://raw.githubusercontent.com/mrdbourke/tensorflow-deep-learning/main/extras/helper_functions.py'
 # helper_functions = wget.download(url)
-#
+
 
 # get a text dataset
 
@@ -18,8 +16,6 @@ from tensorflow.keras.layers import TextVectorization
 # {text samples of Tweets labelled as disasters or not disaster
 
 # skipped the unzip by just copying the data over here
-
-
 # Become one with the data??
 # Visualizing a text dataset
 # to visualized we first have to read our datasets
@@ -133,8 +129,22 @@ print(f"5 least common words: {bottom_5_words}")
 
 from tensorflow.keras import layers
 embedding = layers.Embedding(input_dim=max_vocab_length,  # set input shape
-                             output_dim=128)
+                             output_dim=128,  # output shape,
+                             embeddings_initializer="uniform")  # how long is each input)
+# print(embedding)
+
+# Get a random sentence from the training set
+print(f"original text: \n {random_sentence} \n\nEmbedded version: ")
+# Embed the random sentence (turn it into dense vectors of fixed size)
+sample_embed = embedding(text_vectorizer([random_sentence]))
+print(f"{sample_embed}\n\n\n")
+
+# check out a single token's embedding
+print(sample_embed[0][0])
+print(sample_embed[0][0].shape)
+print(random_sentence)
 
 
-
-
+# ********** KEY THINGS
+# the principles here are the text factorization or tokenization is converting words to some numerical
+# format and then creating and embedding is making that just straight mapping, numerical format, making
