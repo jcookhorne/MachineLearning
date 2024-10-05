@@ -216,8 +216,80 @@ baseline_preds = model_0.predict(val_sentences)
 print(baseline_preds[:20])
 
 
+# Function to evaluate: accuracy, precision, recall, f1-score
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support
+
+def calculate_results(y_true, y_pred):
+    """
+    Calculates model accuracy, precision, recall and f1-score score of a binary classification model
+
+    """
+    model_accuracy = accuracy_score(y_true, y_pred) * 100
+    # Calculate model precision, recall and f1-score using "weighted" average
+    model_precision, model_recall, model_f1, _ = precision_recall_fscore_support(y_true, y_pred, average="weighted")
+    model_results = {"accuracy": model_accuracy,
+                     "precision": model_precision,
+                     "recall": model_recall,
+                     "f1": model_f1}
+    return model_results
 
 
+# Get baseline results
+baseline_results = calculate_results(y_true=val_labels,
+                                     y_pred=baseline_preds)
 
+print(f"these are the baseline results: {baseline_results}")
 
+# *** MODEL 1: A Simple Dense Model
+
+# Create a tensorboard callback( need to create a new one for each model)
+from helper_functions import create_tensorboard_callback
+
+# Create a directory to save TensorBoard logs
+SAVE_DIR = "model_logs"
+
+# Build model with the functional API
+# *Functional api is more customizable than the sequential api
+from tensorflow.keras import layers
+inputs = layers.Input(shape=(1,), dtype=tf.string)  # inputs are 1-dimensional strings
+test = text_vectorizer(inputs)  # turn the input text into numbers
+test = embedding(test)  # create an embedding of the numberized inputs
+print(test.shape)
+# our input are 1 dimensional but our output is not one dimensional?
+test = tf.keras.layers.GlobalAveragePooling1D()(test) # lower the dimensionality of the embedding to 1 dimension
+outputs = layers.Dense(1, activation="sigmoid")(test)  # create the output layer, want the binary outputs so use
+# sigmoid activation functions
+model_1 = tf.keras.Model(inputs, outputs, name="model_1_dense")
+print(f"summary of the model: {model_1.summary()}")
+
+#  # there is something wrong with the shape of the dense layer
+
+# Compile model
+model_1.compile(loss=tf.keras.losses.BinaryCrossentropy(),
+                optimizer=tf.keras.optimizers.Adam(),
+                metrics=["accuracy"])
+# Fit the model_1
+# model_1_history = model_1.fit(x=train_sentences,
+#                               y=train_labels,
+#                               epochs=5,
+#                               validation_data=(val_sentences, val_labels),
+#                               callbacks=[create_tensorboard_callback(dir_name=SAVE_DIR,
+#                                                                      experiment_name="model_1_dense")])
+
+# make some prediction and evaluate those
+model_1_prediction_probability = model_1.predict(val_sentences)
+print(model_1_prediction_probability[:10])
+
+# convert model prediction probabilities to label format
+model_1_preds = tf.squeeze(tf.round(model_1_prediction_probability))
+
+print(model_1_preds[:20])
+
+# Calculate our model_1 results
+model_1_results = calculate_results(y_true=val_labels,
+                                    y_pred=model_1_preds)
+print(f"this is the results of model_1: {model_1_results}")
+
+import numpy as np
+print(np.array(list(model_1_results.values())) > np.array(list(baseline_results.values())))
 
