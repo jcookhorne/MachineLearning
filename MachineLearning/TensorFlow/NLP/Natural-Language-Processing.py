@@ -1,5 +1,5 @@
 # import series of helper functions for the notebook
-import wget
+# import wget
 # from helper_functions import unzip_data, create_tensorboard_callback, plot_loss_curves, compare_historys
 import pandas as pd
 import random
@@ -292,4 +292,17 @@ print(f"this is the results of model_1: {model_1_results}")
 
 import numpy as np
 print(np.array(list(model_1_results.values())) > np.array(list(baseline_results.values())))
+
+
+# Visualizing learned embeddings
+#  Get the vocabulary from the text vectorization layer
+words_in_vocab = text_vectorizer.get_vocabulary()
+print(len(words_in_vocab), words_in_vocab[:10])
+
+# get the weight matrix of the embedding layer
+
+# (these are the numerical represejntations of each token in our training data which have been trained for 5 epochs)
+embed_weights = model_1.get_layer("embedding").get_weights()
+print(embed_weights)
+
 
