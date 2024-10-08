@@ -1,6 +1,7 @@
 # import series of helper functions for the notebook
 # import wget
 # from helper_functions import unzip_data, create_tensorboard_callback, plot_loss_curves, compare_historys
+import io
 import pandas as pd
 import random
 import tensorflow as tf
@@ -254,13 +255,13 @@ from tensorflow.keras import layers
 inputs = layers.Input(shape=(1,), dtype=tf.string)  # inputs are 1-dimensional strings
 test = text_vectorizer(inputs)  # turn the input text into numbers
 test = embedding(test)  # create an embedding of the numberized inputs
-print(test.shape)
+# print(test.shape)
 # our input are 1 dimensional but our output is not one dimensional?
 test = tf.keras.layers.GlobalAveragePooling1D()(test) # lower the dimensionality of the embedding to 1 dimension
 outputs = layers.Dense(1, activation="sigmoid")(test)  # create the output layer, want the binary outputs so use
 # sigmoid activation functions
 model_1 = tf.keras.Model(inputs, outputs, name="model_1_dense")
-print(f"summary of the model: {model_1.summary()}")
+# print(f"summary of the model: {model_1.summary()}")
 
 #  # there is something wrong with the shape of the dense layer
 
@@ -278,17 +279,17 @@ model_1.compile(loss=tf.keras.losses.BinaryCrossentropy(),
 
 # make some prediction and evaluate those
 model_1_prediction_probability = model_1.predict(val_sentences)
-print(model_1_prediction_probability[:10])
+# print(model_1_prediction_probability[:10])
 
 # convert model prediction probabilities to label format
 model_1_preds = tf.squeeze(tf.round(model_1_prediction_probability))
 
-print(model_1_preds[:20])
+# print(model_1_preds[:20])
 
 # Calculate our model_1 results
 model_1_results = calculate_results(y_true=val_labels,
                                     y_pred=model_1_preds)
-print(f"this is the results of model_1: {model_1_results}")
+# print(f"this is the results of model_1: {model_1_results}")
 
 import numpy as np
 print(np.array(list(model_1_results.values())) > np.array(list(baseline_results.values())))
@@ -297,12 +298,54 @@ print(np.array(list(model_1_results.values())) > np.array(list(baseline_results.
 # Visualizing learned embeddings
 #  Get the vocabulary from the text vectorization layer
 words_in_vocab = text_vectorizer.get_vocabulary()
-print(len(words_in_vocab), words_in_vocab[:10])
+# print(len(words_in_vocab), words_in_vocab[:10])
 
 # get the weight matrix of the embedding layer
 
 # (these are the numerical represejntations of each token in our training data which have been trained for 5 epochs)
-embed_weights = model_1.get_layer("embedding").get_weights()
-print(embed_weights)
+embed_weights = model_1.get_layer("embedding").get_weights()[0]
+print(f"these are weights: {embed_weights}")
+print("this is the shape: ", embed_weights.shape)  # same size as vocab size and embedding_dim (output dim of our
+# embedding layer
+
+# Now we've got the embedding matrix our model has learned to represent our tokens,
+# let's see how we can visualize it
+
+# To do so, Tensorflow has a tool called projector
+# ************* also has a guide for embedding **************
+# Create embedding files (this is from tensorflow's word embeddings documentation)
+# out_v = io.open('vectors.tsv', 'w', encoding='utf-8')
+# out_m = io.open('metadata.tsv', 'w', encoding='utf-8')
+# for index, word in enumerate(words_in_vocab):
+#     if index == 0:
+#         continue  # skip 0, its padding
+#     vec = embed_weights[index]
+#     out_v.write('\t'.join([str(x) for x in vec]) +"\n")
+#     out_m.write(word + "\n")
+# out_v.close()
+# out_m.close()
+
+#  Recurrent Neural Networks (RNN's)
+# RNN's are useful for sequence data
+# the premise of a recurrent neural network is to use the representation  of a
+# previous input to aid the representation of a later input
+
+
+
+# RNN's are useful  for sequence data.
+# the premise of recurrent neural networks is to use the representation
+# of the previous input to aid the representation of a later input
+
+# LTSM = long short term memory ( one of the most popular LSTM cells)
+# our structure of an RNN typically  looks like this:
+# input  (text) -> Tokenize  -> Embedding -> Layers (Rnns/dense) -> Output ( label probab
+
+# Create an LSTM Model
+inputs2 = layers.Input(shape=(1,), dtype="string")
+x2 = text_vectorizer(inputs2)
+x2 = embedding(x2)
+x2 = layers.LSTM(64, return_sequences=True)(x2)
+x2 = layers.LSTM(64)
+
 
 
