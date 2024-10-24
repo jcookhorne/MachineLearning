@@ -39,6 +39,7 @@ import zipfile
 import wget
 import os
 import pathlib
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 # Commented so we dont keep downloading it
 # # First get the data (from food 101 at kaggle
@@ -88,7 +89,7 @@ def view_random_image(target_dir, target_class):
     plt.title(target_class)
     plt.axis("off")
     plt.show()
-    print(f"Image shape: {img.shape}")  # show the shape of the image
+    # print(f"Image shape: {img.shape}")  # show the shape of the image
     return img
 
 
@@ -97,6 +98,24 @@ img = view_random_image(target_dir="pizza_steak/train/",
                         target_class="pizza")
 
 # the images we've imported and plotted are actually giant arrays/tensors of different pixel values
-print(tf.constant(img))
+# print(tf.constant(img))
+
+# View the image shape
+print("IMAGE SHAPE : ",img.shape) # returns width, height, color channels
+
+# Get all the pixel values between 0 & 1
+print("PIXEL VALUES: ",img/255)
+
+# * Load our images
+# * Preprocess our images
+# * Build a CNN to find patterns in our images
+# * Compile our CNN
+# * Fit the CNN to our training data
+
+
+# set the seed
+tf.random.set_seed(42)
+
+# Preprocess data (get all of the pixels)
 
 
